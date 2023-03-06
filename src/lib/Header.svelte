@@ -44,9 +44,8 @@
 
   document.addEventListener("keydown", (e) => {
     if (e.key === " " && search_query.length === 0) return;
+    if (e.key.match(/^[a-zA-Z ]$/) === null) return;
     search_el.focus();
-    // if (e.key.match(/^[a-zA-Z]$/)) search_query += e.key;
-    // if (e.key === "Backspace") search_query = search_query.slice(0, -1);
   });
 
   document.addEventListener("scroll", () => {
@@ -75,6 +74,7 @@
         skin_tone = (skin_tone + 1) % 6;
         tone.set("" + skin_tone);
       }}
+      aria-label="Cycle emoji skin tones"
     >
       <!-- <g-emoji class="w-10 h-10 pt-1 text-2xl" tone={skin_tone}>👋</g-emoji> -->
       <!-- <p>skin tone</p> -->
@@ -115,12 +115,15 @@
       bind:value={search_query}
       type="text"
       autocomplete="off"
+      placeholder="Search"
+      aria-label="Search for emojis"
     />
     <p>🔍</p>
   </div>
-  <div class="flex flex-row mx-auto mt-2 md:my-auto">
+  <div class="flex flex-row mx-auto md:mx-0 mt-2 md:my-auto">
     <button
-      class="ml-auto mr-6 flex flex-row items-center md:w-[84.14px]"
+      aria-label="Toggle emoji copy mode"
+      class="mr-6 flex flex-row items-center md:w-[84.14px]"
       on:click={() => {
         emoji_mode = emoji_mode === "emoji" ? "code" : "emoji";
         mode.set(emoji_mode);
@@ -134,6 +137,7 @@
       </p>
     </button>
     <button
+      aria-label="Toggle dark mode"
       class="mr-6 text-2xl"
       on:click={() => {
         $theme === "light" ? theme.set("dark") : theme.set("light");
@@ -142,6 +146,7 @@
       {$theme === "light" ? "☀ " : "🌙"}
     </button>
     <button
+      aria-label="Scroll to top"
       class="text-3xl"
       on:click={() => {
         window.scroll(0, 0);
