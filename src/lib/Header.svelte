@@ -2,16 +2,32 @@
   import { onMount } from "svelte";
 
   import { writable } from "svelte/store";
-  const defaultValue = "dark";
-  const initialValue = window.localStorage.getItem("theme") ?? defaultValue;
-  export const theme = writable<string>(initialValue);
+  export const theme = writable<string>(
+    window.localStorage.getItem("theme") ?? "dark"
+  );
   theme.subscribe((value) => {
     window.localStorage.setItem("theme", value);
   });
   $: if ($theme === "dark") document.documentElement.classList.add("dark");
   else document.documentElement.classList.remove("dark");
 
-  let subtitle_el;
+  // not useful because <g-emoji> doesnt take this value on init for some reason
+  export const tone = writable<string>(
+    window.localStorage.getItem("tone") ?? "0"
+  );
+  tone.subscribe((value) => {
+    window.localStorage.setItem("tone", value);
+  });
+
+  export const mode = writable<string>(
+    window.localStorage.getItem("mode") ?? "code"
+  );
+  mode.subscribe((value) => {
+    window.localStorage.setItem("mode", value);
+  });
+
+
+  let subtitle_el: HTMLElement;
 
   export let skin_tone = 0;
   export let search_query = "";
@@ -21,11 +37,14 @@
   onMount(() => {
     subtitle_el = document.getElementById("subtitle");
     search_el = document.getElementById("search");
+
+    // skin_tone = parseInt($tone);
+    emoji_mode = $mode;
   });
 
   document.addEventListener("keydown", (e) => {
-    if (e.key === " " && search_query.length === 0 ) return
-    search_el.focus()
+    if (e.key === " " && search_query.length === 0) return;
+    search_el.focus();
     // if (e.key.match(/^[a-zA-Z]$/)) search_query += e.key;
     // if (e.key === "Backspace") search_query = search_query.slice(0, -1);
   });
@@ -46,34 +65,50 @@
 </script>
 
 <div
-  class="shadow sticky z-10 top-0 py-4 pl-6 bg-white flex flex-row mb-12
-  dark:bg-slate-900 dark:text-slate-200"
+  class="shadow sticky z-10 top-0 py-4 px-6 bg-white flex mb-12
+  dark:bg-slate-900 dark:text-slate-200 flex-col md:flex-row"
 >
-  <button
-    class="mr-6 flex flex-row items-center"
-    on:click={() => {
-      skin_tone = (skin_tone + 1) % 6;
-    }}
-  >
-    <!-- <g-emoji class="w-10 h-10 pt-1 text-2xl" tone={skin_tone}>👋</g-emoji> -->
-    <!-- <p>skin tone</p> -->
-    <g-emoji class="w-10 h-10 pt-1 text-4xl" tone={skin_tone}>
-      {["👶", "🧒", "👦", "👧", "🧑", "👱", "👨", "🧔", "👩", "🧓", "👴", "👵"][
-        Math.floor(Math.random() * 11)
-      ]}
-    </g-emoji>
-  </button>
-  <div class="flex flex-col">
-    <h1 class="text-3xl font-semibold ">git emojis</h1>
-    <p
-      id="subtitle"
-      class="text-md overflow-hidden max-h-6 transition-[max-height] duration-300
-      ease-in-out "
+  <div class="flex flex-row">
+    <button
+      class="mr-2 md:mr-6 flex flex-row items-center"
+      on:click={() => {
+        skin_tone = (skin_tone + 1) % 6;
+        tone.set("" + skin_tone);
+      }}
     >
-      because emojis are important
-    </p>
+      <!-- <g-emoji class="w-10 h-10 pt-1 text-2xl" tone={skin_tone}>👋</g-emoji> -->
+      <!-- <p>skin tone</p> -->
+      <g-emoji class="w-10 h-10 pt-1 text-2xl md:text-4xl" tone={skin_tone}>
+        {[
+          "👶",
+          "🧒",
+          "👦",
+          "👧",
+          "🧑",
+          "👱",
+          "👨",
+          "🧔",
+          "👩",
+          "🧓",
+          "👴",
+          "👵",
+        ][Math.floor(Math.random() * 11)]}
+      </g-emoji>
+    </button>
+    <div class="flex flex-col">
+      <h1 class="text-2xl md:text-3xl font-semibold ">git emojis</h1>
+      <p
+        id="subtitle"
+        class="text-md overflow-hidden max-h-6 transition-[max-height] duration-300
+      ease-in-out "
+      >
+        because emojis are important
+      </p>
+    </div>
   </div>
-  <div class="w-fit ring-2 ring-pink-500 rounded-md ml-[8vw] my-auto h-10 p-2 flex flex-row items-center">
+  <div
+    class="w-fit ring-2 ring-pink-500 rounded-md h-10 mx-auto mt-4 md:m-auto p-2 flex flex-row items-center"
+  >
     <input
       id="search"
       class="focus:outline-none bg-[rgba(0,0,0,0)] focus:border-none"
@@ -83,34 +118,37 @@
     />
     <p>🔍</p>
   </div>
-  <button
-    class="ml-auto mr-6 flex flex-row items-center"
-    on:click={() => {
-      emoji_mode = emoji_mode === "emoji" ? "text" : "emoji";
-    }}
-  >
-    <p>
-      {@html emoji_mode === "emoji"
-        ? "📎"
-        : `<span class="bg-gray-200 p-1 rounded dark:text-slate-200
+  <div class="flex flex-row mx-auto mt-2 md:my-auto">
+    <button
+      class="ml-auto mr-6 flex flex-row items-center md:w-[84.14px]"
+      on:click={() => {
+        emoji_mode = emoji_mode === "emoji" ? "code" : "emoji";
+        mode.set(emoji_mode);
+      }}
+    >
+      <p class="ml-auto mr-0">
+        {@html emoji_mode === "emoji"
+          ? "📎"
+          : `<span class="bg-gray-200 p-1 rounded dark:text-slate-200
         dark:bg-slate-700">:paperclip:</span>`}
-    </p>
-  </button>
-  <button
-    class="mr-6 text-2xl"
-    on:click={() => {
-      $theme === "light" ? theme.set("dark") : theme.set("light");
-    }}
-  >
-    {$theme === 'light' ? '☀ ' : '🌙'}
-  </button>
-  <button
-    class="mr-4 text-3xl"
-    on:click={() => {
-      window.scroll(0, 0);
-    }}
-    >🔝
-  </button>
+      </p>
+    </button>
+    <button
+      class="mr-6 text-2xl"
+      on:click={() => {
+        $theme === "light" ? theme.set("dark") : theme.set("light");
+      }}
+    >
+      {$theme === "light" ? "☀ " : "🌙"}
+    </button>
+    <button
+      class="text-3xl"
+      on:click={() => {
+        window.scroll(0, 0);
+      }}
+      >🔝
+    </button>
+  </div>
 </div>
 
 <style>
