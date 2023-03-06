@@ -44,7 +44,7 @@
 
   document.addEventListener("keydown", (e) => {
     if (e.key === " " && search_query.length === 0) return;
-    if (e.key.match(/^[a-zA-Z ]$/) === null) return;
+    if (e.key.match(/^([a-zA-Z ]|Backspace)$/) === null) return;
     search_el.focus();
   });
 
