@@ -14,7 +14,7 @@
   let git_emojis: EmojiList = git_emojis_import;
 
   export let skin_tone = 0;
-  export let emoji_mode = "emoji";
+  export let emoji_mode = "code";
 
   let categories = Object.keys(git_emojis);
 

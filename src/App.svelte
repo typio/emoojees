@@ -3,7 +3,7 @@
   import EmojiCardCollection from "./lib/EmojiCardCollection.svelte";
 
   let skin_tone = 0;
-  let emoji_mode = "emoji";
+  let emoji_mode = "code";
   let search_query = "";
 </script>
 

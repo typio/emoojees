@@ -1,4 +1,4 @@
-# git emojis
+# [git emojis](https://git-emojis.vercel.app/)
 
 A cheat sheet for the emojis supported by GitHub in an easy to use website with
 search, inspired by the markdown reference

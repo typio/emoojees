@@ -15,7 +15,7 @@
 
   export let skin_tone = 0;
   export let search_query = "";
-  export let emoji_mode = "emoji";
+  export let emoji_mode = "code";
 
   let search_el: HTMLElement;
   onMount(() => {
@@ -92,7 +92,8 @@
     <p>
       {@html emoji_mode === "emoji"
         ? "📎"
-        : '<span class="bg-gray-200 p-1 rounded dark:text-slate-600">:paperclip:</span>'}
+        : `<span class="bg-gray-200 p-1 rounded dark:text-slate-200
+        dark:bg-slate-700">:paperclip:</span>`}
     </p>
   </button>
   <button
