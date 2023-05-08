@@ -1,0 +1,4 @@
+User-agent: *
+Disallow:
+
+Sitemap: https://emoojees.com/sitemap.xml
