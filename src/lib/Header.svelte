@@ -96,7 +96,7 @@
       </g-emoji>
     </button>
     <div class="flex flex-col">
-      <h1 class="text-2xl md:text-3xl font-semibold ">git emojis</h1>
+      <h1 class="text-2xl md:text-3xl font-semibold ">emoojees</h1>
       <p
         id="subtitle"
         class="text-md overflow-hidden max-h-6 transition-[max-height] duration-300
