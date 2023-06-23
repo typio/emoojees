@@ -65,7 +65,7 @@
 
 <div
   class="shadow sticky z-10 top-0 py-4 px-6 bg-white flex mb-12
-  dark:bg-slate-900 dark:text-slate-200 flex-col md:flex-row"
+  dark:bg-[#020617]  dark:text-slate-200 flex-col md:flex-row"
 >
   <div class="flex flex-row">
     <button
@@ -107,7 +107,7 @@
     </div>
   </div>
   <div
-    class="w-fit ring-2 ring-pink-500 rounded-md h-10 mx-auto mt-4 md:m-auto p-2 flex flex-row items-center"
+    class="w-fit ring-2 ring-indigo-500 dark:ring-pink-500 rounded-md h-10 mx-auto mt-4 md:m-auto p-2 flex flex-row items-center"
   >
     <input
       id="search"
@@ -129,7 +129,7 @@
         mode.set(emoji_mode);
       }}
     >
-      <p class="ml-auto mr-0">
+      <p class="ml-auto mr-0 text-center">
         {@html emoji_mode === "emoji"
           ? "📎"
           : `<span class="bg-gray-200 p-1 rounded dark:text-slate-200
