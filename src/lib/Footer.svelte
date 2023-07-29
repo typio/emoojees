@@ -1,4 +1,3 @@
-<!-- Write a footer  -->
 <footer class="bg-slate-200 dark:bg-slate-900 p-8 flex flex-col indent-4">
   <h2 class="font-semibold text-lg mb-1">
     🙏 for 🛑ing by<span class="font-emoji">‼</span>
