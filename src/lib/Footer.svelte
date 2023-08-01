@@ -1,4 +1,4 @@
-<footer class="bg-slate-200 dark:bg-slate-900 p-8 flex flex-col indent-4">
+<footer class="bg-slate-200 dark:bg-[#020617] p-8 flex flex-col indent-4">
   <h2 class="font-semibold text-lg mb-1">
     🙏 for 🛑ing by<span class="font-emoji">‼</span>
   </h2>
@@ -30,7 +30,7 @@
     </ul>
   </div>
   <h2 class="font-semibold text-lg mb-1">Contribute</h2>
-  <div class="flex flex-row ">
+  <div class="flex flex-row">
     <p>
       🔨 We are constantly 💪 to improve our 😃 cheat sheet and make it even
       more 👥-friendly. That's why we invite you to 🤝 with our 💻 on GitHub!
@@ -56,4 +56,3 @@
     </a>
   </div>
 </footer>
-
