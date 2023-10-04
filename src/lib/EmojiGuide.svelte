@@ -113,7 +113,7 @@
             <button
                 on:click={() => {
                     if (emoji_mode === "code") {
-                        navigator.clipboard.writeText(`:${c_emoji.slug}:`);
+                        navigator.clipboard.writeText(`${c_emoji.slug}`);
                         addToast("Copied!", `${c_emoji.slug}`, 2000);
                     } else {
                         navigator.clipboard.writeText(c_emoji.emoji);
