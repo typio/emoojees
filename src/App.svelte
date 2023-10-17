@@ -1,19 +1,31 @@
 <script lang="ts">
-  import Header from "./lib/Header.svelte";
-  import EmojiCardCollection from "./lib/EmojiCardCollection.svelte";
-  import Footer from "./lib/Footer.svelte";
+    import Header from "./lib/Header.svelte";
+    import EmojiGuide from "./lib/EmojiGuide.svelte";
+    import EmojiCardCollection from "./lib/EmojiCardCollection.svelte";
+    import Footer from "./lib/Footer.svelte";
+    import Toasts from "./lib/Toasts.svelte";
 
-  let skin_tone = 0;
-  let emoji_mode = "code";
-  let search_query = "";
+    let skin_tone = 0;
+    let emoji_mode = "code";
+    let search_query = "";
 </script>
 
 <main>
-  <div class="min-h-screen">
-    <Header bind:skin_tone bind:emoji_mode bind:search_query />
-    <div class="px-10">
-      <EmojiCardCollection bind:skin_tone bind:emoji_mode bind:search_query />
+    <Toasts />
+
+    <div class="min-h-screen">
+        <Header bind:skin_tone bind:emoji_mode bind:search_query />
+        <div class="px-10">
+            {#if search_query.length === 0}
+                <EmojiGuide bind:emoji_mode />
+            {/if}
+
+            <EmojiCardCollection
+                bind:skin_tone
+                bind:emoji_mode
+                bind:search_query
+            />
+        </div>
     </div>
-  </div>
-  <Footer />
+    <Footer />
 </main>
