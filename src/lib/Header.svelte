@@ -127,7 +127,7 @@
     />
     <p>🔍</p>
   </div>
-  <div class="flex flex-row justify-evenly mt-2 md:my-auto">
+  <div class="flex flex-row justify-evenly mt-4 md:my-auto">
     <button
       class="flex flex-row items-center justify-center md:justify-end min-w-[100px]"
       aria-label="Toggle emoji copy mode"
