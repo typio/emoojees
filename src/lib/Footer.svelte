@@ -24,7 +24,7 @@
         or the unicode ➡ 📎.
       </li>
       <li>
-        Click the 🌙/☀ to switch the 🎨, and 🔝 to 🛫 to the 🔝 of the 📄.
+        Click the 🌙/☀️ to switch the 🎨, and 🔝 to 🛫 to the 🔝 of the 📄.
       </li>
       <li>Your ⚙️ are saved in the 🌐 and will be 🧐 next 🕰️ you visit.</li>
     </ul>
