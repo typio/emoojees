@@ -12,7 +12,7 @@
     let git_emojis: EmojiList = git_emojis_import;
 
     export let skin_tone = 0;
-    export let emoji_mode = "code";
+    export let emoji_mode: "code" | "emoji" = "code";
 
     export const categories_selected = writable<string>(
         window.localStorage.getItem("categories_selected") ??
@@ -35,7 +35,7 @@
     <div
         class="flex select-none relative flex-wrap mx-auto mb-10 w-fit max-w-2xl place-content-evenly font-medium text-white"
     >
-        {#each categories as category}
+        {#each categories as category (category)}
             <button
                 class={`w-28 px-4 py-2 h-16 mx-1 my-3 rounded-xl transition-all 
         ${
@@ -102,7 +102,7 @@
 {/if}
 
 <div class="mx-auto max-w-3xl">
-    {#each categories as category}
+    {#each categories as category (category)}
         {#if categories_selected_arr.includes(category) || search_query.length > 0}
             {#if search_query.length === 0}
                 <h2 class="text-2xl font-semibold" id={category}>
@@ -110,11 +110,11 @@
                 </h2>
             {/if}
             {#if category === "Custom"}
-                {#each Object.values(git_emojis[category]) as emoji}
+                {#each Object.values(git_emojis[category]) as emoji (emoji.name)}
                     {#if emoji.name.constructor === String && emoji.fallback_url.constructor === String}
                         {#if emoji.name.includes(search_query) || search_query.length === 0}
                             <button
-                                class={`text-3xl w-1/4 md:w-auto font-emoji p-6 hover:bg-slate-200
+                                class={`text-3xl w-1/4 md:w-auto font-emoji p-4 md:p-6 hover:bg-slate-200
               dark:hover:bg-slate-700 rounded-xl`}
                                 on:click={() => {
                                     navigator.clipboard.writeText(
@@ -122,6 +122,7 @@
                                     );
                                     addToast(
                                         "Copied!",
+                                        emoji_mode,
                                         `:${emoji.name}:`,
                                         2000
                                     );
@@ -137,7 +138,7 @@
                     {/if}
                 {/each}
             {:else}
-                {#each Object.keys(git_emojis[category]) as subcategory}
+                {#each Object.keys(git_emojis[category]) as subcategory (subcategory)}
                     <div class="my-6">
                         {#if search_query.length === 0}
                             <h3 class="ml-8 font-medium">
@@ -154,10 +155,10 @@
                             </h3>
                         {/if}
                         <div class="text-center">
-                            {#each Object.entries(git_emojis[category][subcategory]) as [slug, emoji]}
+                            {#each Object.entries(git_emojis[category][subcategory]) as [slug, emoji] (slug)}
                                 {#if slug.includes(search_query) || emoji.name.includes(search_query) || search_query.length === 0}
                                     <button
-                                        class={`text-3xl w-1/4 md:w-auto font-emoji p-6 hover:bg-slate-200
+                                        class={`text-3xl w-1/4 md:w-auto font-emoji p-4 md:p-6 hover:bg-slate-200
               dark:hover:bg-slate-700 rounded-xl`}
                                         on:click={() => {
                                             if (emoji_mode === "code") {
@@ -166,6 +167,7 @@
                                                 );
                                                 addToast(
                                                     "Copied!",
+                                                    emoji_mode,
                                                     `:${slug}:`,
                                                     2000
                                                 );
@@ -175,6 +177,7 @@
                                                 );
                                                 addToast(
                                                     "Copied!",
+                                                    emoji_mode,
                                                     emoji.emoji,
                                                     2000
                                                 );

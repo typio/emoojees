@@ -146,7 +146,7 @@
 
     <button
       aria-label="Toggle dark mode"
-      class="w-9 h-9 mx-4 text-2xl text-center"
+      class="w-9 h-9 ml-2 md:ml-4 mr-2 text-2xl text-center"
       on:click={() => {
         $theme === "light" ? theme.set("dark") : theme.set("light");
       }}
@@ -156,7 +156,7 @@
 
     <button
       aria-label="Scroll to top"
-      class="text-3xl mx-4"
+      class="text-3xl mx-2"
       on:click={() => {
         window.scroll(0, 0);
       }}
