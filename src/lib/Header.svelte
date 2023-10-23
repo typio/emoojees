@@ -102,7 +102,7 @@
           window.scroll(0, 0);
         }}
       >
-        emoojees
+        <a href="/">emoojees</a>
       </h1>
       <p
         id="subtitle"
