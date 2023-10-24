@@ -1,73 +1,65 @@
 <script lang="ts">
-  export const prerender = false;
-
-  import { browser } from "$app/environment";
   import { onMount } from "svelte";
+
   import { writable } from "svelte/store";
+  export const theme = writable<string>(
+    window.localStorage.getItem("theme") ?? "dark"
+  );
+  theme.subscribe((value) => {
+    window.localStorage.setItem("theme", value);
+  });
+  $: if ($theme === "dark") document.documentElement.classList.add("dark");
+  else document.documentElement.classList.remove("dark");
 
-  const defaultValue = "dark";
-  const initialValue = browser
-    ? window.localStorage.getItem("theme") ?? defaultValue
-    : defaultValue;
+  // not useful because <g-emoji> doesnt take this value on init for some reason
+  export const tone = writable<string>(
+    window.localStorage.getItem("tone") ?? "0"
+  );
+  tone.subscribe((value) => {
+    window.localStorage.setItem("tone", value);
+  });
 
-  export const theme = writable<string>(initialValue);
-  export let mode;
+  export const mode = writable<string>(
+    window.localStorage.getItem("mode") ?? "code"
+  );
+  mode.subscribe((value) => {
+    window.localStorage.setItem("mode", value);
+  });
+
+  let subtitle_el: HTMLElement;
+
+  export let skin_tone = 0;
   export let search_query = "";
-  export let emoji_mode = "emoji";
+  export let emoji_mode = "code";
 
-  if (browser) {
-    if ($theme === "dark") {
-      document.documentElement.classList.add("dark");
+  let search_el: HTMLElement;
+  onMount(() => {
+    subtitle_el = document.getElementById("subtitle");
+    search_el = document.getElementById("search");
+
+    // skin_tone = parseInt($tone);
+    emoji_mode = $mode;
+  });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === " " && search_query.length === 0) return;
+    if (e.key.match(/^([a-zA-Z ]|Backspace)$/) === null) return;
+    search_el.focus();
+  });
+
+  document.addEventListener("scroll", () => {
+    if (window.scrollY > 0) {
+      subtitle_el.classList.add(["max-h-0"]);
+      subtitle_el.classList.add(["scale-y-0"]);
+
+      subtitle_el.classList.remove(["max-h-6"]);
     } else {
-      document.documentElement.classList.remove("dark");
+      subtitle_el.classList.remove(["max-h-0"]);
+      subtitle_el.classList.remove(["scale-y-0"]);
+
+      subtitle_el.classList.add(["max-h-6"]);
     }
-    
-    mode = writable<string>(window.localStorage.getItem("mode") ?? "emoji");
-    mode.subscribe((value) => {
-      window.localStorage.setItem("mode", value);
-    });
-
-    let subtitle_el: HTMLElement;
-
-    theme.subscribe((value) => {
-      console.log(value);
-      window.localStorage.setItem("theme", value);
-
-      if (value === "dark") {
-        document.documentElement.classList.add("dark");
-      } else {
-        document.documentElement.classList.remove("dark");
-      }
-    });
-
-    let search_el: HTMLElement;
-    onMount(() => {
-      subtitle_el = document.getElementById("subtitle");
-      search_el = document.getElementById("search");
-
-      emoji_mode = $mode;
-    });
-
-    document.addEventListener("keydown", (e) => {
-      if (e.key === " " && search_query.length === 0) return;
-      if (e.key.match(/^([a-zA-Z ]|Backspace)$/) === null) return;
-      search_el.focus();
-    });
-
-    document.addEventListener("scroll", () => {
-      if (window.scrollY > 0) {
-        subtitle_el.classList.add(["max-h-0"]);
-        subtitle_el.classList.add(["scale-y-0"]);
-
-        subtitle_el.classList.remove(["max-h-6"]);
-      } else {
-        subtitle_el.classList.remove(["max-h-0"]);
-        subtitle_el.classList.remove(["scale-y-0"]);
-
-        subtitle_el.classList.add(["max-h-6"]);
-      }
-    });
-  }
+  });
 </script>
 
 <div
@@ -77,9 +69,15 @@
   <div class="flex flex-row">
     <button
       class="mr-2 md:mr-6 flex flex-row items-center"
-      aria-label="Click the emoji"
+      on:click={() => {
+        skin_tone = (skin_tone + 1) % 6;
+        tone.set("" + skin_tone);
+      }}
+      aria-label="Cycle emoji skin tones"
     >
-      <g-emoji class="w-10 h-10 pt-1 text-2xl md:text-4xl">
+      <!-- <g-emoji class="w-10 h-10 pt-1 text-2xl" tone={skin_tone}>👋</g-emoji> -->
+      <!-- <p>skin tone</p> -->
+      <g-emoji class="w-10 h-10 pt-1 text-2xl md:text-4xl" tone={skin_tone}>
         {[
           "👶",
           "🧒",
@@ -93,7 +91,7 @@
           "🧓",
           "👴",
           "👵",
-        ][Math.floor((new Date()).getTime() / 1000 % 12)]}
+        ][Math.floor(Math.random() * 11)]}
       </g-emoji>
     </button>
     <div class="flex flex-col">
@@ -139,10 +137,10 @@
       }}
     >
       <p class="mr-0 text-center">
-        {@html emoji_mode === "code"
-          ? `<span class="bg-gray-200 p-1 rounded dark:text-slate-200
-        dark:bg-slate-700">:paperclip:</span>`
-          : "📎"}
+        {@html emoji_mode === "emoji"
+          ? "📎"
+          : `<span class="bg-gray-200 p-1 rounded dark:text-slate-200
+        dark:bg-slate-700">:paperclip:</span>`}
       </p>
     </button>
 
