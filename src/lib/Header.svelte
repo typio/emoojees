@@ -3,7 +3,7 @@
 
   import { writable } from "svelte/store";
   export const theme = writable<string>(
-    window.localStorage.getItem("theme") ?? "dark"
+    window.localStorage.getItem("theme") ?? "dark",
   );
   theme.subscribe((value) => {
     window.localStorage.setItem("theme", value);
@@ -13,31 +13,32 @@
 
   // not useful because <g-emoji> doesnt take this value on init for some reason
   export const tone = writable<string>(
-    window.localStorage.getItem("tone") ?? "0"
+    window.localStorage.getItem("tone") ?? "0",
   );
   tone.subscribe((value) => {
     window.localStorage.setItem("tone", value);
   });
 
   export const mode = writable<string>(
-    window.localStorage.getItem("mode") ?? "code"
+    window.localStorage.getItem("mode") ?? "emoji",
   );
   mode.subscribe((value) => {
     window.localStorage.setItem("mode", value);
   });
 
+  let title_el: HTMLElement;
   let subtitle_el: HTMLElement;
 
   export let skin_tone = 0;
   export let search_query = "";
-  export let emoji_mode = "code";
+  export let emoji_mode = "emoji";
 
   let search_el: HTMLElement;
   onMount(() => {
+    title_el = document.getElementById("title");
     subtitle_el = document.getElementById("subtitle");
     search_el = document.getElementById("search");
 
-    // skin_tone = parseInt($tone);
     emoji_mode = $mode;
   });
 
@@ -50,25 +51,23 @@
   document.addEventListener("scroll", () => {
     if (window.scrollY > 0) {
       subtitle_el.classList.add(["max-h-0"]);
-      subtitle_el.classList.add(["scale-y-0"]);
-
       subtitle_el.classList.remove(["max-h-6"]);
+      title_el.innerText = "emoojees";
     } else {
+      title_el.innerText = "emoojees,";
       subtitle_el.classList.remove(["max-h-0"]);
-      subtitle_el.classList.remove(["scale-y-0"]);
-
       subtitle_el.classList.add(["max-h-6"]);
     }
   });
 </script>
 
 <div
-  class="shadow sticky z-10 top-0 py-4 px-6 bg-white flex mb-12
-  dark:bg-[#020617] dark:text-slate-200 flex-col md:flex-row"
+  class="sticky top-0 py-4 px-6 bg-slate-50 shadow-md dark:shadow-none flex
+  dark:bg-slate-950 dark:text-slate-200 flex-col md:flex-row z-20"
 >
   <div class="flex flex-row">
     <button
-      class="mr-2 md:mr-6 flex flex-row items-center"
+      class="mr-2 md:mr-4 flex flex-row items-center"
       on:click={() => {
         skin_tone = (skin_tone + 1) % 6;
         tone.set("" + skin_tone);
@@ -94,78 +93,128 @@
         ][Math.floor(Math.random() * 11)]}
       </g-emoji>
     </button>
-    <div class="flex flex-col">
-      <h1
-        class="text-2xl md:text-3xl font-semibold"
-        on:click={() => {
-          search_query = "";
-          window.scroll(0, 0);
-        }}
-      >
-        <a href="/">emoojees</a>
+    <div class="flex flex-col justify-center">
+      <h1 class="text-2xl md:text-3xl font-[Nabla]">
+        <a id="title" href="https://emoojees.com">emoojees,</a>
       </h1>
       <p
         id="subtitle"
-        class="text-md overflow-hidden max-h-6 transition-[max-height] duration-300
-      ease-in-out"
+        class="text-lg overflow-hidden max-h-6 transition-[max-height] duration-300
+      ease-in-out font-medium dark:text-accent"
       >
-        because emojis are important
+        because emojis are important.
       </p>
     </div>
   </div>
-  <div
-    class="w-fit ring-2 ring-indigo-500 dark:ring-pink-500 rounded-md h-10 mx-auto mt-4 md:m-auto p-2 flex flex-row items-center"
-  >
-    <input
-      id="search"
-      class="focus:outline-none bg-[rgba(0,0,0,0)] focus:border-none"
-      bind:value={search_query}
-      type="text"
-      autocomplete="off"
-      placeholder="Search"
-      aria-label="Search for emojis"
-    />
-    <p>🔍</p>
+  <!-- Search Bar -->
+  <div class="mx-auto mt-4 md:m-auto max-w-lg">
+    <div
+      class="group flex items-center bg-slate-50 dark:bg-slate-900 rounded-2xl
+             shadow-sm hover:shadow-lg border-2 border-slate-200 dark:border-slate-700
+             focus-within:border-accent dark:focus-within:border-accent
+             transition-all duration-300"
+    >
+      <span
+        class="pl-4 text-xl opacity-60 group-focus-within:opacity-100 transition-opacity"
+        >🔍</span
+      >
+      <input
+        id="search"
+        class="max-w-3xs py-2 px-4 bg-transparent focus:outline-none text-slate-900 dark:text-slate-100
+               placeholder-slate-500 dark:placeholder-slate-400 text-lg font-medium"
+        bind:value={search_query}
+        type="text"
+        autocomplete="off"
+        placeholder="Search emojis..."
+        aria-label="Search for emojis"
+      />
+      <button
+        class="pr-5 text-slate-400 hover:text-slate-600 dark:hover:text-slate-300 transition
+          {search_query ? 'opacity-100' : 'opacity-0'}"
+        on:click={() => (search_query = "")}
+        aria-label="Clear search"
+      >
+        <svg
+          class="w-5 h-5"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M6 18L18 6M6 6l12 12"
+          />
+        </svg>
+      </button>
+    </div>
   </div>
-  <div class="flex flex-row justify-evenly mt-4 md:my-auto">
+
+  <!-- Action Buttons -->
+  <div class="flex flex-row gap-2 mt-4 md:my-auto justify-center">
+    <!-- Copy Mode Toggle -->
     <button
-      class="flex flex-row items-center justify-center md:justify-end min-w-[100px]"
+      class="group relative bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-900
+             rounded-xl shadow-sm hover:shadow-md border border-slate-200 dark:border-slate-700
+             p-2.5 transition-all duration-200 hover:-translate-y-0.5"
       aria-label="Toggle emoji copy mode"
       on:click={() => {
         emoji_mode = emoji_mode === "emoji" ? "code" : "emoji";
         mode.set(emoji_mode);
       }}
     >
-      <p class="mr-0 text-center">
-        {@html emoji_mode === "emoji"
-          ? "📎"
-          : `<span class="bg-gray-200 p-1 rounded dark:text-slate-200
-        dark:bg-slate-700">:paperclip:</span>`}
-      </p>
+      <div class="flex items-center justify-center gap-2 w-[56px] sm:w-[82px]">
+        {#if emoji_mode === "emoji"}
+          <span class="text-xl leading-0 overflow-visible">😊</span>
+          <span
+            class="text-md font-medium text-slate-600 dark:text-slate-400 hidden sm:block"
+            >Emoji</span
+          >
+        {:else}
+          <span class="font-mono text-md text-slate-700 dark:text-slate-300"
+            >:code:</span
+          >
+        {/if}
+      </div>
     </button>
 
+    <!-- Theme Toggle -->
     <button
       aria-label="Toggle dark mode"
-      class="w-9 h-9 ml-2 md:ml-4 mr-2 text-2xl text-center"
+      class="group relative bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-900
+             rounded-xl shadow-sm hover:shadow-md border border-slate-200 dark:border-slate-700
+             p-2.5 transition-all duration-200 hover:-translate-y-0.5 w-12 h-12 flex items-center justify-center"
       on:click={() => {
         $theme === "light" ? theme.set("dark") : theme.set("light");
       }}
     >
-      {$theme === "light" ? "☀️" : "🌙"}
+      <span class="text-xl">{$theme === "light" ? "☀️" : "🌙"}</span>
     </button>
 
+    <!-- Scroll to Top -->
     <button
       aria-label="Scroll to top"
-      class="text-3xl mx-2"
+      class="group relative bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-900
+             rounded-xl shadow-sm hover:shadow-md border border-slate-200 dark:border-slate-700
+             p-2.5 transition-all duration-200 hover:-translate-y-0.5 w-12 h-12 flex items-center justify-center"
       on:click={() => {
-        window.scroll(0, 0);
+        window.scroll({ top: 0, behavior: "smooth" });
       }}
-      >🔝
+    >
+      <span class="text-xl">⬆️</span>
     </button>
 
-    <a href="https://github.com/typio/emoojees " class="h-fit my-auto ml-4">
+    <!-- GitHub Link -->
+    <a
+      href="https://github.com/typio/emoojees"
+      aria-label="View on GitHub"
+      class="group relative bg-gradient-to-br from-white to-slate-50 dark:from-slate-800 dark:to-slate-900
+             rounded-xl shadow-sm hover:shadow-md border border-slate-200 dark:border-slate-700
+             p-2.5 transition-all duration-200 hover:-translate-y-0.5 w-12 h-12 flex items-center justify-center"
+    >
       <svg
-        class="fill-slate-800 dark:fill-slate-200 w-9 h-9"
+        class="fill-slate-700 dark:fill-slate-200 w-6 h-6"
         viewBox="0 0 100 100"
         xmlns="http://www.w3.org/2000/svg"
       >
@@ -178,6 +227,3 @@
     </a>
   </div>
 </div>
-
-<style>
-</style>

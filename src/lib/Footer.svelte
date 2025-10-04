@@ -1,24 +1,20 @@
-<footer class="bg-slate-200 dark:bg-[#020617] pt-6 px-12 flex flex-col indent-4">
-  <h2 class="font-semibold text-lg mb-1">
-    🙏 for 🛑ing by<span class="font-emoji">‼</span>
-  </h2>
-  <div class="flex flex-row mb-4 space-x-6">
+<footer
+  class="bg-slate-100 dark:bg-slate-950 pt-6 px-12 flex flex-col indent-4"
+>
+  <div class="my-4">
     <p>
-      Emoji-lovers rejoice! Our cheat sheet has got you covered with all the
+      🙏 for 🛑 ing by‼ Our cheat sheet has you covered for all the
       GitHub-supported emojis you could ever want. Copy and paste to your
-      heart's content and let the good times roll 🎉😎🤙.
-    </p>
-    <p>
-      Thanks for emoji-ing around with us! Remember, when words fail, emojis
-      speak. 🎉 Don't be afraid to express yourself with a little help from our
-      searchable cheat sheet. Whether you're feeling 😍 or 🤯, we're here to
-      help. Happy coding! 👨‍💻👩‍💻
+      heart's content and let the good times roll 🎉😎🤙. Remember, when words
+      fail, emojis speak 🗣. Don't be afraid to express yourself with a little
+      help from our searchable cheat sheet 🎉. Whether you're feeling 😍 or 🤯,
+      we're here to help. Happy coding! 👨‍💻👩‍💻
     </p>
   </div>
   <div class="mb-4">
-    <h2 class="font-semibold text-lg mb-1">👉 Here's some 💡!</h2>
+    <h2 class="font-semibold text-lg mb-1">👉 Here are some 💡!</h2>
     <ul class="list-disc list-inside">
-      <li>Type at anytime to 🔍!</li>
+      <li>Type anytime to 🔍.</li>
       <li>
         The 📎 in the header will allow you to 📋 the GitHub code ➡ :paperclip:
         or the unicode ➡ 📎.
@@ -29,7 +25,7 @@
       <li>Your ⚙️ are saved in the 🌐 and will be 🧐 next 🕰️ you visit.</li>
     </ul>
   </div>
-  <h2 class="font-semibold text-lg mb-1">Contribute</h2>
+  <h2 class="font-semibold text-lg mb-1">👉 Contribute</h2>
   <div class="flex flex-row mb-6">
     <p>
       🔨 We are constantly 💪 to improve our 😃 cheat sheet and make it even
@@ -42,7 +38,9 @@
     </p>
   </div>
 
-  <div class="flex flex-col mb-8 text-center indent-0 md:flex-row justify-center gap-2 text-slate-500">
+  <div
+    class="flex flex-col mb-8 text-center indent-0 md:flex-row justify-center gap-2 text-slate-500"
+  >
     <p>© {new Date().getFullYear()} The Emoji Megacorp.</p>
     <p>All rights enforced by PMC.</p>
   </div>

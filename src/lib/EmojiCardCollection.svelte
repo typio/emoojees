@@ -1,78 +1,79 @@
 <script lang="ts">
-    // import { buildEmojiJSON } from "./scripts/BuildJSON";
-    // console.log(buildEmojiJSON())
-    import { addToast } from "./utils";
-
-    import type { Emoji, EmojiList } from "./scripts/BuildJSON";
-
+    import fuzzysort from "fuzzysort";
     import { writable } from "svelte/store";
-    import git_emojis_import from "../assets/git_emojis.json";
     import "@github/g-emoji-element";
+    import EmojiIcon from "./EmojiIcon.svelte";
+    import type { Emoji, EmojiList } from "./utils";
 
-    let git_emojis: EmojiList = git_emojis_import;
-
+    export let emojis: EmojiList;
     export let skin_tone = 0;
-    export let emoji_mode: "code" | "emoji" = "code";
+    export let onEmojiClick: ((emoji: Emoji) => void) | undefined = undefined;
 
     export const categories_selected = writable<string>(
         window.localStorage.getItem("categories_selected") ??
-            '["Smileys & Emotion"]'
+            '["Smileys & Emotion"]',
     );
     categories_selected.subscribe((value) => {
         window.localStorage.setItem("categories_selected", value);
     });
     let categories_selected_arr = JSON.parse($categories_selected);
 
-    let categories = Object.keys(git_emojis);
+    let categories = Object.keys(emojis);
 
     export let search_query = "";
 
     $: allCategoriesSelected =
         categories_selected_arr.length === categories.length;
+
+    const flatEmojiList = Object.values(emojis).reduce(
+        (acc, curr) => [
+            ...acc,
+            ...Object.values(curr).reduce(
+                (acc2, curr2) => [...acc2, ...Object.values(curr2)],
+                [],
+            ),
+        ],
+        [],
+    );
+
+    const searchableEmojis = flatEmojiList.map((emoji) => ({
+        ...emoji,
+        searchName: emoji.name || "",
+        searchSlug: emoji.slug || "",
+        searchAliases: emoji.aliases?.join(" ") || "",
+    }));
+
+    $: searchResults =
+        search_query.trim().length === 0
+            ? []
+            : (() => {
+                  const results = fuzzysort.go(
+                      search_query.trim(),
+                      searchableEmojis,
+                      {
+                          keys: ["searchName", "searchSlug", "searchAliases"],
+                          limit: 70,
+                          threshold: 0.2,
+                      },
+                  );
+                  return results.map((result) => result.obj);
+              })();
 </script>
 
 {#if search_query.length === 0}
     <div
-        class="flex select-none relative flex-wrap mx-auto mb-10 w-fit max-w-2xl place-content-evenly font-medium text-white"
+        class="text-sm font-semibold flex select-none relative flex-wrap mx-auto mb-10 w-fit max-w-3xl justify-center gap-2"
     >
-        {#each categories as category (category)}
-            <button
-                class={`w-28 px-4 py-2 h-16 mx-1 my-3 rounded-xl transition-all 
-        ${
-            categories_selected_arr.includes(category)
-                ? `translate-y-[4px] bg-indigo-400 dark:bg-pink-400 `
-                : `bg-indigo-500 dark:bg-pink-500
-        [box-shadow:0_4px_0_0_#4f46e5] dark:[box-shadow:0_4px_0_0_#db2777]`
-        }`}
-                on:click={() => {
-                    if (categories_selected_arr.includes(category))
-                        categories_selected_arr =
-                            categories_selected_arr.filter(
-                                (e) => e !== category
-                            );
-                    else categories_selected_arr.push(category);
-                    // var scrollTarget = document.getElementById(category).offsetTop;
-                    // window.scrollTo({ top: scrollTarget - 95, behavior: "smooth" });
-                    $categories_selected = JSON.stringify(
-                        categories_selected_arr
-                    );
-                    categories = categories;
-                }}
-            >
-                {category}
-            </button>
-        {/each}
-
         {#if !allCategoriesSelected}
             <button
                 class="
-            absolute bottom-[-88px] lg:bottom-auto lg:right-0 lg:translate-x-[100%] w-28 px-4 py-2 h-16 my-3 rounded-xl
-            transition-all font-medium bg-green-500 [box-shadow:0_4px_0_0_#16a34a]
-            "
+                       bg-green-100 dark:bg-green-900/20 text-green-700 dark:text-green-400
+                       rounded-xl px-4 py-3 min-w-[100px] font-medium
+                       hover:bg-green-200 dark:hover:bg-green-900/30"
                 on:click={() => {
                     categories_selected_arr = categories;
                     $categories_selected = JSON.stringify(
-                        categories_selected_arr
+                        categories_selected_arr,
                     );
                     categories = categories;
                 }}
@@ -82,13 +83,13 @@
         {:else}
             <button
                 class="
-            absolute bottom-[-88px] lg:bottom-auto lg:right-0 lg:translate-x-[100%] w-28 px-4 py-2 h-16 my-3 rounded-xl
-            transition-all font-medium bg-red-500 [box-shadow:0_4px_0_0_#dc2626]
-            "
+                       bg-red-100 dark:bg-red-900/20 text-red-700 dark:text-red-400
+                       rounded-xl px-4 py-3 min-w-[100px] font-medium
+                       hover:bg-red-200 dark:hover:bg-red-900/30"
                 on:click={() => {
                     categories_selected_arr = [];
                     $categories_selected = JSON.stringify(
-                        categories_selected_arr
+                        categories_selected_arr,
                     );
                     categories = categories;
                 }}
@@ -96,113 +97,101 @@
                 Hide all
             </button>
         {/if}
+        {#each categories as category (category)}
+            <button
+                class="group relative rounded-xl px-4 py-3 min-w-[112px] font-medium transition-all duration-200
+                       {categories_selected_arr.includes(category)
+                    ? 'bg-accent text-slate-900 dark:text-slate-900 shadow-md'
+                    : 'bg-slate-100 dark:bg-slate-800/50 text-slate-600 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700/50'}"
+                on:click={() => {
+                    if (categories_selected_arr.includes(category))
+                        categories_selected_arr =
+                            categories_selected_arr.filter(
+                                (e) => e !== category,
+                            );
+                    else categories_selected_arr.push(category);
+                    $categories_selected = JSON.stringify(
+                        categories_selected_arr,
+                    );
+                    categories = categories;
+                }}
+            >
+                {category}
+            </button>
+        {/each}
     </div>
 
     <div class="show-all-spacer h-16 lg:h-0" />
 {/if}
 
 <div class="mx-auto max-w-3xl">
-    {#each categories as category (category)}
-        {#if categories_selected_arr.includes(category) || search_query.length > 0}
-            {#if search_query.length === 0}
-                <h2 class="text-2xl font-semibold" id={category}>
-                    <header>{category}</header>
-                </h2>
-            {/if}
-            {#if category === "Custom"}
-                {#each Object.values(git_emojis[category]) as emoji (emoji.name)}
-                    {#if emoji.name.constructor === String && emoji.fallback_url.constructor === String}
-                        {#if emoji.name.includes(search_query) || search_query.length === 0}
-                            <button
-                                class={`text-3xl w-1/4 md:w-auto font-emoji p-4 md:p-6 hover:bg-slate-200
-              dark:hover:bg-slate-700 rounded-xl`}
-                                on:click={() => {
-                                    navigator.clipboard.writeText(
-                                        `:${emoji.name}:`
-                                    );
-                                    addToast(
-                                        "Copied!",
-                                        emoji_mode,
-                                        `:${emoji.name}:`,
-                                        2000
-                                    );
-                                }}
-                            >
-                                <img
-                                    class="w-10"
-                                    src={emoji.fallback_url}
-                                    alt={emoji.name}
-                                />
-                            </button>
-                        {/if}
-                    {/if}
+    {#if search_query.length > 0}
+        {#if searchResults.length === 0}
+            <div class="flex h-[60vh] justify-center items-center text-center">
+                Sorry, no results for <span
+                    class="mx-1 px-2 bg-slate-700 rounded"
+                >
+                    {search_query}
+                </span>.
+            </div>
+        {:else}
+            <div class="flex flex-row flex-wrap justify-center">
+                {#each searchResults as emoji}
+                    <EmojiIcon {emoji} {skin_tone} {onEmojiClick} />
                 {/each}
-            {:else}
-                {#each Object.keys(git_emojis[category]) as subcategory (subcategory)}
-                    <div class="my-6">
-                        {#if search_query.length === 0}
-                            <h3 class="ml-8 font-medium">
-                                <header>
-                                    {subcategory
-                                        .replaceAll("-", " ")
-                                        .replace(/\w\S*/g, (txt) => {
-                                            return (
-                                                txt.charAt(0).toUpperCase() +
-                                                txt.slice(1).toLowerCase()
-                                            );
-                                        })}
-                                </header>
-                            </h3>
-                        {/if}
-                        <div class="text-center">
-                            {#each Object.entries(git_emojis[category][subcategory]) as [slug, emoji] (slug)}
-                                {#if slug.includes(search_query) || emoji.name.includes(search_query) || search_query.length === 0}
-                                    <button
-                                        class={`text-3xl w-1/4 md:w-auto font-emoji p-4 md:p-6 hover:bg-slate-200
-              dark:hover:bg-slate-700 rounded-xl`}
-                                        on:click={() => {
-                                            if (emoji_mode === "code") {
-                                                navigator.clipboard.writeText(
-                                                    `:${slug}:`
-                                                );
-                                                addToast(
-                                                    "Copied!",
-                                                    emoji_mode,
-                                                    `:${slug}:`,
-                                                    2000
-                                                );
-                                            } else {
-                                                navigator.clipboard.writeText(
-                                                    emoji.emoji
-                                                );
-                                                addToast(
-                                                    "Copied!",
-                                                    emoji_mode,
-                                                    emoji.emoji,
-                                                    2000
-                                                );
-                                            }
-                                        }}
-                                    >
-                                        <g-emoji tone={skin_tone}>
-                                            {emoji.emoji}
-                                        </g-emoji>
-                                    </button>
-                                {/if}
-                            {/each}
-                        </div>
-                    </div>
-                {/each}
-            {/if}
+            </div>
         {/if}
-    {/each}
+    {:else}
+        {#each categories as category (category)}
+            {#if categories_selected_arr.includes(category)}
+                <div
+                    class="border-2 border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 p-8 mb-8 rounded-3xl"
+                >
+                    <h2 class="text-2xl font-semibold" id={category}>
+                        <header>{category}</header>
+                    </h2>
+                    {#each Object.keys(emojis[category]) as subcategory (subcategory)}
+                        <div class="my-6">
+                            {#if subcategory !== "GitHub"}
+                                <h3 class="font-medium">
+                                    <header>
+                                        {subcategory
+                                            .replaceAll("-", " ")
+                                            .replace(/\w\S*/g, (txt) => {
+                                                return (
+                                                    txt
+                                                        .charAt(0)
+                                                        .toUpperCase() +
+                                                    txt.slice(1).toLowerCase()
+                                                );
+                                            })}
+                                    </header>
+                                </h3>
+                            {/if}
+                            <div
+                                class="text-center flex flex-row flex-wrap justify-center"
+                            >
+                                {#each Object.entries(emojis[category][subcategory]) as [slug, emoji] (slug)}
+                                    <EmojiIcon
+                                        {emoji}
+                                        {skin_tone}
+                                        {onEmojiClick}
+                                    />
+                                {/each}
+                            </div>
+                        </div>
+                    {/each}
+                </div>
+            {/if}
+        {/each}
+    {/if}
 </div>
 
-<!-- <EmojiCard -->
-<!--     emoji="👋" -->
-<!--     slug=":waving_hand:" -->
-<!--     name="Waving Hand" -->
+<!--  Emoji Care Guide: Take the time to find the right one. Emojis are created for -->
+<!-- specific purposes by people far wiser than you, if your use-case is valid, one -->
+<!-- perfect emoji will exist for it, if you can't find it, remember you are at -->
+<!-- fault, not the creators of emoji. Do not overcrowd your emoji, emojis are like -->
+<!-- apex predators--they need a territory to control.  -->
 
-<!-- /> -->
 <style>
 </style>
