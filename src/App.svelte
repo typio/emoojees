@@ -56,7 +56,7 @@
                         GitHub emoji cheat sheet.
                     </h2>
                     <p class="mt-2 text-slate-800 dark:text-slate-300">
-                        Quick emoji loopup for your commit messages.
+                        The quick emoji loopup for your commit messages.
                     </p>
                 </div>
 
