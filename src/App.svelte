@@ -41,7 +41,9 @@
             return [recentEmoji, ...filtered].slice(0, 50);
         });
 
-        gtag("event", "emoji_copy");
+        gtag("event", "emoji_copy", {
+            emoji: emoji.slug,
+        });
     }
 </script>
 
