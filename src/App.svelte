@@ -40,6 +40,8 @@
             const filtered = current.filter((e) => e !== emoji.slug);
             return [recentEmoji, ...filtered].slice(0, 50);
         });
+
+        gtag("event", "emoji_copy");
     }
 </script>
 
